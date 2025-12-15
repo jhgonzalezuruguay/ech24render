@@ -19,24 +19,6 @@ library(htmltools)
 
 options(survey.lonely.psu = "adjust")
 
-# === Descarga ECH 2024 desde Google Drive (Render compatible) ===
-csv_path <- "ECH_2024.csv"
-
-if (!file.exists(csv_path)) {
-  download.file(
-    url = "https://drive.google.com/uc?export=download&id=1wrZJ1K_mB4DtlJrlD28BDabpcG2OCtDj",
-    destfile = csv_path,
-    mode = "wb",
-    quiet = FALSE
-  )
-}
-
-
-
-
-# Ruta local del CSV (ajústala a tu PC)
-ruta_csv <- csv_path
-
 
 ui <- fluidPage(
   titlePanel("ECH 2024 — Hogares MiPyME dependientes (ingreso principal)"),
@@ -82,6 +64,25 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  # Descarga segura del CSV (solo una vez por contenedor)
+csv_path <- "ECH_2024.csv"
+
+if (!file.exists(csv_path)) {
+  message("Descargando ECH_2024.csv...")
+  tryCatch({
+    download.file(
+      url = "https://drive.google.com/uc?export=download&id=1wrZJ1K_mB4DtlJrlD28BDabpcG2OCtDj",
+      destfile = csv_path,
+      mode = "wb",
+      quiet = FALSE
+    )
+  }, error = function(e) {
+    stop("Fallo al descargar ECH_2024.csv: ", e$message)
+  })
+}
+
+ruta_csv <- csv_path
+
   
   # Geometría departamental URY (GADM nivel 1) — reproducible y estándar
   uruguay_sf <- reactive({
@@ -443,5 +444,6 @@ server <- function(input, output, session) {
   
   
 }
+
 
 shinyApp(ui, server)
