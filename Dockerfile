@@ -23,6 +23,9 @@ RUN R -e "install.packages(c( \
 # Copiar la app al contenedor
 COPY app.R /srv/shiny-server/app.R
 
+# Copiar configuración de Shiny Server
+COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
+
 # Exponer el puerto que usa Shiny
 EXPOSE 3838
 
