@@ -1,5 +1,7 @@
 FROM rocker/shiny:4.3.1
 
+ENV SHINY_LOG_STDERR=1
+
 # Evitar preguntas interactivas
 ENV DEBIAN_FRONTEND=noninteractive
 
