@@ -20,6 +20,8 @@ library(htmltools)
 options(survey.lonely.psu = "adjust")
 
 
+
+
 ui <- fluidPage(
   titlePanel("ECH 2024 — Hogares MiPyME dependientes (ingreso principal)"),
   sidebarLayout(
@@ -64,30 +66,33 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
   # Descarga segura del CSV (solo una vez por contenedor)
-csv_path <- "ECH_2024.csv"
-
-if (!file.exists(csv_path)) {
-  message("Descargando ECH_2024.csv...")
-  tryCatch({
-    download.file(
-      url = "https://drive.google.com/uc?export=download&id=1wrZJ1K_mB4DtlJrlD28BDabpcG2OCtDj",
-      destfile = csv_path,
-      mode = "wb",
-      quiet = FALSE
-    )
-  }, error = function(e) {
-    stop("Fallo al descargar ECH_2024.csv: ", e$message)
-  })
-}
-
-ruta_csv <- csv_path
-
+  csv_path <- "ECH_2024.csv"
+  
+  if (!file.exists(csv_path)) {
+    message("Descargando ECH_2024.csv...")
+    tryCatch({
+      download.file(
+        url = "https://drive.google.com/uc?export=download&id=1wrZJ1K_mB4DtlJrlD28BDabpcG2OCtDj",
+        destfile = csv_path,
+        mode = "wb",
+        quiet = FALSE
+      )
+    }, error = function(e) {
+      stop("Fallo al descargar ECH_2024.csv: ", e$message)
+    })
+  }
+  
+  ruta_csv <- csv_path
   
   # Geometría departamental URY (GADM nivel 1) — reproducible y estándar
   uruguay_sf <- reactive({
-    ur_raw <- geodata::gadm(country = "URY", level = 1, path = tempdir())
-    st_as_sf(ur_raw) %>% 
+    gadm_dir <- "data/gadm"
+    if (!dir.exists(gadm_dir)) dir.create(gadm_dir, recursive = TRUE)
+    
+    ur_raw <- geodata::gadm(country = "URY", level = 1, path = gadm_dir)
+    uruguay_sf <- st_as_sf(ur_raw) %>% 
       mutate(NAME_NORM = stri_trans_general(NAME_1, "Latin-ASCII") |> toupper() |> trimws())
   })
   
@@ -444,6 +449,5 @@ ruta_csv <- csv_path
   
   
 }
-
 
 shinyApp(ui, server)
