@@ -108,7 +108,7 @@ server <- function(input, output, session) {
     gadm_dir <- "data/gadm"
     if (!dir.exists(gadm_dir)) dir.create(gadm_dir, recursive = TRUE)
     
-    ur_raw <- geodata::gadm(country = "URY", level = 1, path = gadm_dir)
+    ur_raw <- sf::st_read("/srv/shiny-server/data/gadm41_URY_1.gpkg", quiet = TRUE)
     uruguay_sf <- st_as_sf(ur_raw) %>% 
       mutate(NAME_NORM = stri_trans_general(NAME_1, "Latin-ASCII") |> toupper() |> trimws())
   })
@@ -468,3 +468,4 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
