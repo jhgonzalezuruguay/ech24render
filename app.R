@@ -19,10 +19,30 @@ library(stringi)
 library(leaflet)
 library(htmltools)
 
+# === CARGA DEL MAPA URUGUAY (UNA SOLA VEZ) ===
+library(sf)
+library(geodata)
+library(stringi)
+library(dplyr)
+
+message("Cargando shapefile Uruguay...")
+
+ur_raw <- geodata::gadm(
+  country = "URY",
+  level = 1,
+  path = "/tmp"
+)
+
+URUGUAY_SF <- st_as_sf(ur_raw) %>%
+  mutate(
+    NAME_NORM = stri_trans_general(NAME_1, "Latin-ASCII") |>
+      toupper() |> trimws()
+  )
+
+message("Shapefile Uruguay cargado OK")
+
+
 options(survey.lonely.psu = "adjust")
-
-
-
 
 ui <- fluidPage(
   titlePanel("ECH 2024 — Hogares MiPyME dependientes (ingreso principal) - Mag. José González"),
@@ -85,7 +105,8 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  
+  uruguay_sf <- reactive({ URUGUAY_SF })
+
   # Descarga segura del CSV (solo una vez por contenedor)
   csv_path <- "ECH_2024.csv"
   
@@ -105,15 +126,6 @@ server <- function(input, output, session) {
   
   ruta_csv <- csv_path
   
-  # Geometría departamental URY (GADM nivel 1) — reproducible y estándar
-  uruguay_sf <- reactive({
-    gadm_dir <- "data/gadm"
-    if (!dir.exists(gadm_dir)) dir.create(gadm_dir, recursive = TRUE)
-    
-    ur_raw <- sf::st_read("/srv/shiny-server/data/gadm41_URY_1.gpkg", quiet = TRUE)
-    uruguay_sf <- st_as_sf(ur_raw) %>% 
-      mutate(NAME_NORM = stri_trans_general(NAME_1, "Latin-ASCII") |> toupper() |> trimws())
-  })
   
   # Carga y procesamiento de la base ECH
   base <- reactive({
@@ -470,5 +482,6 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
 
 
