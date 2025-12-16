@@ -1,36 +1,49 @@
 FROM rocker/shiny:4.3.1
 
-ENV SHINY_LOG_STDERR=1
-
-# Evitar preguntas interactivas
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar dependencias del sistema necesarias
+# =========================
+# Dependencias del sistema (sf, leaflet, geodata)
+# =========================
 RUN apt-get update && apt-get install -y \
-    libssl-dev \
     libcurl4-openssl-dev \
+    libssl-dev \
     libxml2-dev \
-    libudunits2-dev \
+    libfontconfig1-dev \
     libgdal-dev \
     libgeos-dev \
     libproj-dev \
+    libudunits2-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar paquetes R requeridos por la app
+# =========================
+# Paquetes de R requeridos por la app
+# =========================
 RUN R -e "install.packages(c( \
-  'shiny','data.table','dplyr','survey','tidyr','DT','plotly','scales', \
-  'sf','ggplot2','geodata','stringi','leaflet','htmltools' \
+  'shiny', \
+  'data.table', \
+  'dplyr', \
+  'survey', \
+  'tidyr', \
+  'DT', \
+  'plotly', \
+  'scales', \
+  'sf', \
+  'ggplot2', \
+  'geodata', \
+  'stringi', \
+  'leaflet', \
+  'htmltools' \
 ), repos='https://cloud.r-project.org')"
 
-# Copiar la app al contenedor
+# =========================
+# Copiamos la app y config
+# =========================
 COPY app.R /srv/shiny-server/app.R
-
-# Copiar configuración de Shiny Server
 COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 
-# Exponer el puerto que usa Shiny
+RUN chown -R shiny:shiny /srv/shiny-server
+
 EXPOSE 3838
 
-# Ejecutar Shiny Server
 CMD ["/usr/bin/shiny-server"]
-
