@@ -23,7 +23,7 @@ options(survey.lonely.psu = "adjust")
 
 
 ui <- fluidPage(
-  titlePanel("ECH 2024 — Hogares MiPyME dependientes (ingreso principal)"),
+  titlePanel("ECH 2024 — Hogares MiPyME dependientes (ingreso principal) - Mag. José González"),
   sidebarLayout(
     sidebarPanel(
       checkboxInput("filtrar_ocupados", "Filtrar a hogares con al menos un ocupado", TRUE),
@@ -34,31 +34,48 @@ ui <- fluidPage(
       tabsetPanel(
         tabPanel("Resumen nacional",
                  h4("Proporción nacional de hogares MiPyME-dependientes"),
+                 helpText("Este indicador muestra el porcentaje de hogares cuyo ingreso principal proviene de MiPyMEs. 
+                           Se considera dependiente si al menos el 50% del ingreso total del hogar proviene de ocupados en estas empresas."),
                  DTOutput("tabla_prop_nacional"),
                  br(),
                  h4("Proporción por departamento"),
+                 helpText("La comparación territorial permite observar diferencias entre departamentos en la dependencia de ingresos MiPyME. 
+                           Los valores más altos indican mayor concentración de hogares dependientes."),
                  DTOutput("tabla_dep_prop"),
                  br(),
                  plotlyOutput("plot_dep_prop")),
         tabPanel("Ingresos por hogar",
                  h4("Medias ponderadas por dependencia MiPyME (HT11, YSVL)"),
+                 helpText("Se presentan los ingresos medios de los hogares, diferenciando entre aquellos dependientes de MiPyMEs y los no dependientes. 
+                           Las variables HT11 y YSVL corresponden a medidas de ingreso total del hogar."),
                  DTOutput("tabla_ing_hogar"),
                  br(),
+                 helpText("El gráfico compara los ingresos medios según la condición de dependencia MiPyME. 
+                           Permite visualizar brechas económicas entre hogares."),
                  plotlyOutput("plot_hogar_barras")),
         tabPanel("Ingresos personales (ocupados)",
                  h4("Medias entre ocupados por grupo MiPyME/No MiPyME"),
+                 helpText("Aquí se muestran los ingresos medios de las personas ocupadas, distinguiendo si trabajan en MiPyMEs o en empresas de mayor tamaño. 
+                           Esto permite analizar diferencias individuales en el mercado laboral."),
                  DTOutput("tabla_ing_persona"),
                  br(),
+                 helpText("El gráfico ilustra las diferencias de ingreso personal entre ocupados MiPyME y no MiPyME."),
                  plotlyOutput("plot_persona_barras")),
         tabPanel("Participación vs país",
                  h4("Participación departamental en el total nacional de hogares dependientes"),
+                 helpText("Este indicador muestra qué proporción de los hogares MiPyME-dependientes de todo el país se concentran en cada departamento. 
+                           Permite identificar territorios con mayor peso relativo."),
                  DTOutput("tabla_dep_vs_pais"),
                  br(),
+                 helpText("El gráfico ordena los departamentos según su participación en el total nacional de hogares dependientes."),
                  plotlyOutput("plot_dep_vs_pais")),
         tabPanel("Mapa interactivo",
                  h4("Proporción de hogares MiPyME-dependientes por departamento"),
+                 helpText("El mapa muestra la distribución territorial de la dependencia MiPyME. 
+                           Al pasar el cursor sobre cada departamento se despliega información detallada."),
                  leafletOutput("mapa_leaflet", height = "600px"),
                  br(),
+                 helpText("La tabla complementa el mapa con valores numéricos de proporción y total de hogares."),
                  DTOutput("tabla_union_mapa"))
       )
     )
