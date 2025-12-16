@@ -45,5 +45,7 @@ COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 RUN chown -R shiny:shiny /srv/shiny-server
 
 EXPOSE 3838
+# Descargar GADM Uruguay en build-time
+RUN R -e "library(geodata); gadm(country='URY', level=1, path='/srv/shiny-server/data')"
 
 CMD ["/usr/bin/shiny-server"]
