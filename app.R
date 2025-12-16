@@ -2,6 +2,8 @@
 # Hogares MiPyME dependientes según ingreso principal (ECH 2024)
 # Autor: José González Gómez
 
+Sys.setenv(SF_USE_S2 = "false")
+
 library(shiny)
 library(data.table)
 library(dplyr)
@@ -468,4 +470,5 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
 
